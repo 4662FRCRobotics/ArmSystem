@@ -50,7 +50,7 @@ public class ArmLinearActuator extends Subsystem {
     
     public final PIDController armPID = new PIDController(mArmPVal, mArmIVal, mArmDVal, armPosPot, armLiftMotor);
         
-    public void ArmSubSys() {
+    public void ArmLinearActuator() {
     	
     	armLiftMotor.setInverted(invMotor);
     	
