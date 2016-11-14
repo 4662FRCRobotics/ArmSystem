@@ -29,31 +29,42 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class ArmLinearActuator extends Subsystem {
 
-    private final DigitalInput homeLocSw = new DigitalInput(RobotMap.iArmHomeLocSw);
-    private final DigitalInput scoopLimSw = new DigitalInput(RobotMap.iArmBotLimSw);
-    private final DigitalInput topLimSw = new DigitalInput(RobotMap.iArmTopLimSw);
+    private DigitalInput homeLocSw; 
+    private DigitalInput scoopLimSw;
+    private DigitalInput topLimSw;
     
-    private final SpeedController armLiftMotor = new Talon(RobotMap.iArmMotor);
+    private SpeedController armLiftMotor;
     
-    private final AnalogPotentiometer armPosPot = new AnalogPotentiometer(RobotMap.iArmPosPot,330,-260);
+    private AnalogPotentiometer armPosPot;
     
     private final Boolean invMotor = true;
     private final double invSpeed = -1.0;
     
-    private double mHomeSetpoint = 0;
-    private double mSetpoint = 0; 
-    private double mSetpointTbl [] = {10.5, 15.0, 22.0, 27.0};
-    private int mSetpIx = 0;
+    private double m_dHomeSetpoint = 0;
+    private double m_dSetpoint = 0; 
+    private double m_dSetpointTbl [] = {10.5, 15.0, 22.0, 27.0};
+    private int m_iSetPIx = 0;
     
-    private double mArmPVal = -0.7;
-    private double mArmIVal = -0.0;
-    private double mArmDVal = -0.5;
-    private double mArmTlrnc = 0.80;
+    private double m_dArmPVal = -0.7;
+    private double m_dArmIVal = -0.0;
+    private double m_dArmDVal = -0.5;
+    private double m_dArmTolerance = 0.80;
     
-    public final PIDController armPID = new PIDController(mArmPVal, mArmIVal, mArmDVal, armPosPot, armLiftMotor);
+    public PIDController armPID;// = new PIDController(m_dArmPVal, m_dArmIVal, m_dArmDVal, armPosPot, armLiftMotor);
         
     public void ArmLinearActuator() {
-    	if (invMotor) {
+    	
+        homeLocSw = new DigitalInput(RobotMap.iArmHomeLocSw);
+        scoopLimSw = new DigitalInput(RobotMap.iArmBotLimSw);
+        topLimSw = new DigitalInput(RobotMap.iArmTopLimSw);
+        
+        armLiftMotor = new Talon(RobotMap.iArmMotor);
+        
+        armPosPot = new AnalogPotentiometer(RobotMap.iArmPosPot,330,-260);
+        
+        armPID = new PIDController(m_dArmPVal, m_dArmIVal, m_dArmDVal, armPosPot, armLiftMotor);
+    	
+        if (invMotor) {
     		armLiftMotor.setInverted(invMotor);
     	}
      }
@@ -92,7 +103,7 @@ public class ArmLinearActuator extends Subsystem {
     }
     
     public void newHomePID(){
-    	this.mHomeSetpoint = this.getArmPID();
+    	this.m_dHomeSetpoint = this.getArmPID();
     }
     
     public void stopArm() {
@@ -108,29 +119,29 @@ public class ArmLinearActuator extends Subsystem {
     	armPosPot.setPIDSourceType(PIDSourceType.kDisplacement);
     	armPID.setInputRange(-2,55);
     	armPID.setOutputRange(-1, 1);
-    	armPID.setSetpoint(mSetpoint);
-    	armPID.setPID(mArmPVal, mArmIVal, mArmDVal);
-    	armPID.setAbsoluteTolerance(mArmTlrnc);
+    	armPID.setSetpoint(m_dSetpoint);
+    	armPID.setPID(m_dArmPVal, m_dArmIVal, m_dArmDVal);
+    	armPID.setAbsoluteTolerance(m_dArmTolerance);
     	armPID.enable();
     }
     
     public void moveHome() {
-    	mSetpoint = mHomeSetpoint;
+    	m_dSetpoint = m_dHomeSetpoint;
     }
     
      
     public void setARMSetpoint(double setpoint) {
-    	mSetpoint = setpoint;
+    	m_dSetpoint = setpoint;
     }
     
     public void setArmSetpointTbl(boolean isUp) {
-    	mSetpoint = mSetpointTbl[mSetpIx] + mHomeSetpoint;
+    	m_dSetpoint = m_dSetpointTbl[m_iSetPIx] + m_dHomeSetpoint;
     	if (isUp == true) {
-    		mSetpIx = (mSetpIx + 1) % mSetpointTbl.length;
+    		m_iSetPIx = (m_iSetPIx + 1) % m_dSetpointTbl.length;
     	} else {
-    		mSetpIx = mSetpIx - 1;
-    		if (mSetpIx < 0) {
-    			mSetpIx = mSetpointTbl.length - 1;
+    		m_iSetPIx = m_iSetPIx - 1;
+    		if (m_iSetPIx < 0) {
+    			m_iSetPIx = m_dSetpointTbl.length - 1;
     		}
     	}
 
@@ -157,27 +168,27 @@ public class ArmLinearActuator extends Subsystem {
     }
     
     public void dashboardDisplay() {
-		SmartDashboard.putNumber("Arm P Val", mArmPVal);
-		SmartDashboard.putNumber("Arm I Val", mArmIVal);
-		SmartDashboard.putNumber("Arm D Val", mArmDVal);
-		SmartDashboard.putNumber("Arm Tolerance", mArmTlrnc);
-		SmartDashboard.putNumber("Arm Target", mSetpoint);
+		SmartDashboard.putNumber("Arm P Val", m_dArmPVal);
+		SmartDashboard.putNumber("Arm I Val", m_dArmIVal);
+		SmartDashboard.putNumber("Arm D Val", m_dArmDVal);
+		SmartDashboard.putNumber("Arm Tolerance", m_dArmTolerance);
+		SmartDashboard.putNumber("Arm Target", m_dSetpoint);
     }
     
     public void dashboardFetch() {
-    	mArmPVal = SmartDashboard.getNumber("Arm P Val", mArmPVal);
-		mArmIVal = SmartDashboard.getNumber("Arm I Val", mArmIVal);
-		mArmDVal = SmartDashboard.getNumber("Arm D Val", mArmDVal);
-		mArmTlrnc = SmartDashboard.getNumber("Arm Tolerance", mArmTlrnc);
-		mSetpoint = SmartDashboard.getNumber("Arm Target", mSetpoint);
+    	m_dArmPVal = SmartDashboard.getNumber("Arm P Val", m_dArmPVal);
+		m_dArmIVal = SmartDashboard.getNumber("Arm I Val", m_dArmIVal);
+		m_dArmDVal = SmartDashboard.getNumber("Arm D Val", m_dArmDVal);
+		m_dArmTolerance = SmartDashboard.getNumber("Arm Tolerance", m_dArmTolerance);
+		m_dSetpoint = SmartDashboard.getNumber("Arm Target", m_dSetpoint);
     }
     
     public void logArm() {
     	SmartDashboard.putNumber("Arm Pot Value", armPosPot.get());
     	SmartDashboard.putNumber("Arm Pot PIDGet", armPosPot.pidGet());
-    	SmartDashboard.putNumber("Arm Home Setpoint", mHomeSetpoint);
-    	SmartDashboard.putNumber("Arm PID Setpoint", mSetpoint);
-       	SmartDashboard.putNumber("Arm Setpt Tbl Ix", mSetpIx);
+    	SmartDashboard.putNumber("Arm Home Setpoint", m_dHomeSetpoint);
+    	SmartDashboard.putNumber("Arm PID Setpoint", m_dSetpoint);
+       	SmartDashboard.putNumber("Arm Setpt Tbl Ix", m_iSetPIx);
     	
     	SmartDashboard.putBoolean("Home Switch", isHome());
     	SmartDashboard.putBoolean("Top Lim Switch", isTop());
