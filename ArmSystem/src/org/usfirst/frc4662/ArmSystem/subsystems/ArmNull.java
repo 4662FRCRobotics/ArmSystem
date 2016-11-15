@@ -29,11 +29,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class ArmNull extends Subsystem {
 
-//    private final DigitalInput homeLocSw = new DigitalInput(RobotMap.iArmHomeLocSw);
-//    private final DigitalInput scoopLimSw = new DigitalInput(RobotMap.iArmBotLimSw);
-//    private final DigitalInput topLimSw = new DigitalInput(RobotMap.iArmTopLimSw);
-//    private final SpeedController armLiftMotor = new Talon(RobotMap.iArmMotor);
-//    private final AnalogPotentiometer armPosPot = new AnalogPotentiometer(RobotMap.iArmPosPot,330,-260);
+    private final DigitalInput homeLocSw = new DigitalInput(RobotMap.iArmHomeLocSw);
+    private final DigitalInput scoopLimSw = new DigitalInput(RobotMap.iArmBotLimSw);
+    private final DigitalInput topLimSw = new DigitalInput(RobotMap.iArmTopLimSw);
+    private final SpeedController armLiftMotor = new Talon(RobotMap.iArmMotor);
+    private final AnalogPotentiometer armPosPot = new AnalogPotentiometer(RobotMap.iArmPosPot,330,-260);
     
     private final Boolean invMotor = true;
     private final double invSpeed = -1.0;
@@ -48,9 +48,9 @@ public class ArmNull extends Subsystem {
     private static double mArmDVal = -0.5;
     private static double mArmTlrnc = 0.80;
     
- //   public final PIDController armPID = new PIDController(mArmPVal, mArmIVal, mArmDVal, armPosPot, armLiftMotor);
+    public final PIDController armPID = new PIDController(mArmPVal, mArmIVal, mArmDVal, armPosPot, armLiftMotor);
         
-    public void ArmNull() {
+    public void ArmSubSys() {
     	
     }
     
