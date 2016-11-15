@@ -32,35 +32,32 @@ public class ArmLinearActuator extends Subsystem {
     private final DigitalInput homeLocSw = new DigitalInput(RobotMap.iArmHomeLocSw);
     private final DigitalInput scoopLimSw = new DigitalInput(RobotMap.iArmBotLimSw);
     private final DigitalInput topLimSw = new DigitalInput(RobotMap.iArmTopLimSw);
+    
     private final SpeedController armLiftMotor = new Talon(RobotMap.iArmMotor);
+    
     private final AnalogPotentiometer armPosPot = new AnalogPotentiometer(RobotMap.iArmPosPot,330,-260);
     
     private final Boolean invMotor = true;
     private final double invSpeed = -1.0;
     
-    private static double mHomeSetpoint = 0;
-    private static double mSetpoint = 0; 
-    private static double mSetpointTbl [] = {10.5, 15.0, 22.0, 27.0};
-    private static int mSetpIx = 0;
+    private double mHomeSetpoint = 0;
+    private double mSetpoint = 0; 
+    private double mSetpointTbl [] = {10.5, 15.0, 22.0, 27.0};
+    private int mSetpIx = 0;
     
-    private static double mArmPVal = -0.7;
-    private static double mArmIVal = -0.0;
-    private static double mArmDVal = -0.5;
-    private static double mArmTlrnc = 0.80;
+    private double mArmPVal = -0.7;
+    private double mArmIVal = -0.0;
+    private double mArmDVal = -0.5;
+    private double mArmTlrnc = 0.80;
     
     public final PIDController armPID = new PIDController(mArmPVal, mArmIVal, mArmDVal, armPosPot, armLiftMotor);
         
     public void ArmSubSys() {
-    	
     	armLiftMotor.setInverted(invMotor);
-    	
-//    	setArmPID();
-       	
     }
     
     public void initDefaultCommand() {
-        // setDefaultCommand(new MySpecialCommand());
-    	setDefaultCommand(new JoystickArmMove());
+     	setDefaultCommand(new JoystickArmMove());
     }
     
     public void moveArm(double speed) {
